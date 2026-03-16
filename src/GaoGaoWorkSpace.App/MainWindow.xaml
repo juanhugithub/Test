@@ -1,0 +1,148 @@
+<Window x:Class="GaoGaoWorkSpace.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:GaoGaoWorkSpace.UI.ViewModels;assembly=GaoGaoWorkSpace.UI"
+        xmlns:model="clr-namespace:GaoGaoWorkSpace.Core.Models;assembly=GaoGaoWorkSpace.Core"
+        mc:Ignorable="d"
+        Title="糕糕工作台"
+        Height="860" Width="1400"
+        MinWidth="1100" MinHeight="700"
+        Background="#F3F5F8">
+
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="320" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#1F2937" Padding="12">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                    <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="糕糕工作台" />
+                    <TextBlock Foreground="#CDD6E0" FontSize="12" Text="工作资料治理与结构重建" />
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Foreground="#E5E7EB" Margin="0,8,0,4" Text="收藏" FontWeight="Bold" />
+                    <TextBox Margin="0,0,0,8" Text="{Binding FavoriteFilter, UpdateSourceTrigger=PropertyChanged}" />
+                    <ListBox Height="250" ItemsSource="{Binding Favorites}" SelectedItem="{Binding SelectedFavorite}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="• " Foreground="#93C5FD" />
+                                    <TextBlock Text="{Binding DisplayName}" Foreground="White" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Content="打开收藏" Margin="0,8,0,0" Command="{Binding OpenFavoriteCommand}" CommandParameter="{Binding SelectedFavorite}" />
+                    <Button Content="移除收藏" Margin="0,8,0,0" Command="{Binding RemoveFavoriteCommand}" />
+
+                    <TextBlock Foreground="#E5E7EB" Margin="0,16,0,4" Text="最近访问" FontWeight="Bold" />
+                    <ListBox Height="220" ItemsSource="{Binding RecentPaths}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Background="White" Padding="10" CornerRadius="6">
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Width="520" Text="{Binding WorkspacePath, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Margin="8,0,0,0" Content="读取结构" Command="{Binding LoadWorkspaceCommand}" />
+                    <Button Margin="8,0,0,0" Content="收藏所选" Command="{Binding AddFavoriteCommand}" />
+                </StackPanel>
+            </Border>
+
+            <TabControl Grid.Row="1" Margin="0,10,0,10" Height="180">
+                <TabItem Header="导出 Markdown">
+                    <StackPanel Margin="8">
+                        <TextBox Text="{Binding ExportMarkdownPath, UpdateSourceTrigger=PropertyChanged}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <CheckBox Content="包含文件" IsChecked="{Binding IncludeFiles}" />
+                            <Button Margin="12,0,0,0" Content="导出" Command="{Binding ExportMarkdownCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Header="导入并生长">
+                    <StackPanel Margin="8">
+                        <TextBox Margin="0,0,0,6" Text="{Binding ImportMarkdownPath, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Margin="0,0,0,6" Text="{Binding TargetRootPath, UpdateSourceTrigger=PropertyChanged}" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="解析预览" Command="{Binding ImportMarkdownPreviewCommand}" />
+                            <Button Margin="8,0,0,0" Content="预览将创建" Command="{Binding PreviewBuildCommand}" />
+                            <Button Margin="8,0,0,0" Content="开始创建" Command="{Binding ApplyBuildCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Header="搜索">
+                    <StackPanel Margin="8">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Width="360" Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Margin="8,0,0,0" Content="查找" Command="{Binding SearchTreeCommand}" />
+                        </StackPanel>
+                        <ItemsControl ItemsSource="{Binding SearchResults}" Margin="0,8,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FullPath}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+
+            <Border Grid.Row="2" Background="White" CornerRadius="6" Padding="6">
+                <TreeView ItemsSource="{Binding RootNodes}" SelectedItemChanged="TreeView_SelectedItemChanged">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type model:TreeNodeModel}" ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Name}" />
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </Border>
+        </Grid>
+
+        <Border Grid.Column="2" Background="White" Margin="10" CornerRadius="6" Padding="12">
+            <StackPanel>
+                <TextBlock FontSize="16" FontWeight="Bold" Text="节点详情" />
+                <TextBlock Margin="0,8,0,8" Text="{Binding SelectedNodePath}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding SelectedNodeInfo}" TextWrapping="Wrap" />
+
+                <TextBlock Margin="0,16,0,8" FontWeight="Bold" Text="创建预览" />
+                <ListBox Height="260" ItemsSource="{Binding BuildPreviewItems}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,2">
+                                <TextBlock Text="{Binding TargetPath}" FontSize="11" />
+                                <TextBlock Text="{Binding Reason}" Foreground="Gray" FontSize="10" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock Margin="0,12,0,0" Text="{Binding BuildSummaryText}" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.ColumnSpan="3" Background="#111827" Padding="10,4">
+            <TextBlock Foreground="#D1D5DB" Text="{Binding StatusText}" />
+        </Border>
+    </Grid>
+</Window>
