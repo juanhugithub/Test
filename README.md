@@ -1,11 +1,8 @@
 # GaoGaoWorkSpace（糕糕工作台）
 
-本仓库包含两部分：
+这是 **C# + WPF + MVVM** 的桌面版本工程（.NET 8）。
 
-- 旧版 Python 原型：`folder_tree_workbench/`
-- 新版 WPF 重构工程：`src/`（C# + .NET 8 + MVVM）
-
-## 新版架构（WPF）
+## 项目结构
 
 ```text
 src/
@@ -26,23 +23,54 @@ src/
 - 风险路径识别（UNC、盘根、系统目录）
 - 本地 JSON 配置与本地日志
 
-## 运行（本地 Windows）
+## 在本地用 Visual Studio 测试
+
+### 1) 下载到本地
+
+```bash
+git clone <你的仓库地址>
+cd Test
+```
+
+或者如果你已经有仓库，只需拉最新：
+
+```bash
+git pull
+```
+
+### 2) 用 Visual Studio 打开
+
+- 使用 **Visual Studio 2022**（建议 17.8+）
+- 勾选工作负载：
+  - **.NET 桌面开发**
+- 打开根目录下：
+  - `GaoGaoWorkSpace.sln`
+
+### 3) 还原并运行
+
+在 VS 中：
+
+1. 右键解决方案 → `还原 NuGet 包`
+2. 将 `GaoGaoWorkSpace.App` 设为启动项目
+3. 选择 `Debug | Any CPU`（或 `x64`）
+4. 按 `F5` 运行
+
+### 4) 运行测试
+
+- 打开 `测试` -> `测试资源管理器`
+- 点击 `运行所有测试`
+- 或在终端执行：
+
+```bash
+dotnet test src/GaoGaoWorkSpace.Tests
+```
+
+## 命令行构建/运行
 
 ```bash
 dotnet restore
 dotnet build GaoGaoWorkSpace.sln
-```
-
-启动：
-
-```bash
 dotnet run --project src/GaoGaoWorkSpace.App
-```
-
-## 测试
-
-```bash
-dotnet test src/GaoGaoWorkSpace.Tests
 ```
 
 ## 发布建议
