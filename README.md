@@ -115,3 +115,42 @@ git push origin v1.0.0
 ```powershell
 ./scripts/publish_release.ps1 -Version v1.0.0
 ```
+
+## 常见报错排查（你这次遇到的错误）
+
+### 1）“当前上下文中不存在名称 Path / File / Directory”
+
+这通常是代码文件缺少 `System.IO` 命名空间引用导致。当前仓库已修复该问题（在 `MainViewModel.cs` 增加了显式 `using System.IO;` 等）。
+
+如果你本地仍看到旧错误：
+
+1. `git pull` 拉最新代码
+2. Visual Studio 菜单：`生成` -> `清理解决方案`
+3. 再执行：`生成` -> `重新生成解决方案`
+
+### 2）“XML 命名空间中不存在标记 MainViewModel”
+
+这个错误多数是**上一步 C# 编译失败引起的连带 XAML 错误**。
+
+按下面顺序处理：
+
+1. 先解决 C# 编译错误（尤其是 `Path/File/Directory`）
+2. 关闭 `MainWindow.xaml` 设计器标签，再重新打开
+3. 执行 `重新生成解决方案`
+
+### 3）“不再需要使用 Microsoft.NET.Sdk.WindowsDesktop SDK”
+
+这是 SDK 提示，不是致命错误。当前仓库已改为推荐写法：
+
+- `GaoGaoWorkSpace.App.csproj` 使用 `Microsoft.NET.Sdk`
+- 并保留 `<UseWPF>true</UseWPF>`
+
+### 4）“Your Windows doesn't fully support CET”
+
+这是系统环境提示（和 Windows 更新/安全特性相关），一般不影响你调试本项目。
+
+建议：
+
+- 在 Windows 更新里安装所有可用更新
+- 更新后重启电脑
+
