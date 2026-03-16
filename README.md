@@ -86,3 +86,32 @@ dotnet publish src/GaoGaoWorkSpace.App -c Release -r win-x64 --self-contained fa
 ```bash
 dotnet publish src/GaoGaoWorkSpace.App -c Release -r win-x64 --self-contained true
 ```
+
+
+## 发布到 GitHub Release（自动化）
+
+仓库已提供工作流：`.github/workflows/release.yml`。
+
+### 触发方式
+
+1. 确保本地提交已推送到 GitHub 远程仓库
+2. 创建并推送语义化标签（如 `v1.0.0`）
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+推送标签后，GitHub Actions 会自动：
+
+- 还原/构建/测试
+- 生成两个发布包：
+  - `GaoGaoWorkSpace-win-x64-framework.zip`
+  - `GaoGaoWorkSpace-win-x64-self-contained.zip`
+- 自动创建 GitHub Release 并上传附件
+
+你也可以用脚本：
+
+```powershell
+./scripts/publish_release.ps1 -Version v1.0.0
+```
